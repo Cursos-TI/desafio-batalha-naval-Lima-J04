@@ -1,5 +1,5 @@
-include <stdio.h>
-#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define TAMANHO 10
 #define TAM_HAB 5  // Tamanho das matrizes de habilidade (5x5)
@@ -23,11 +23,11 @@ void posicionar_navio(int tabuleiro[TAMANHO][TAMANHO], int linha, int coluna, in
     for (int i = 0; i < 3; i++) {
         int l = linha, c = coluna;
         if (diagonal == 0) {
-            if (direcao == 0) l += i;
-            else c += i;
+            if (direcao == 0) l += i;       // vertical
+            else c += i;                    // horizontal
         } else {
-            if (direcao == 0) { l += i; c += i; }
-            else { l += i; c -= i; }
+            if (direcao == 0) { l += i; c += i; }       // diagonal principal
+            else { l += i; c -= i; }                    // diagonal secundária (inversa)
         }
 
         if (l >= 0 && l < TAMANHO && c >= 0 && c < TAMANHO) {
@@ -36,20 +36,30 @@ void posicionar_navio(int tabuleiro[TAMANHO][TAMANHO], int linha, int coluna, in
     }
 }
 
-// Cria matriz de habilidade em forma de cone
-void criar_cone(int matriz[TAM_HAB][TAM_HAB]) {
-    memset(matriz, 0, sizeof(int) * TAM_HAB * TAM_HAB);
+// Inicializa matriz 2D com zeros
+void inicializar_matriz(int matriz[TAM_HAB][TAM_HAB]) {
     for (int i = 0; i < TAM_HAB; i++) {
         for (int j = 0; j < TAM_HAB; j++) {
-            if (j >= TAM_HAB / 2 - i && j <= TAM_HAB / 2 + i)
+            matriz[i][j] = 0;
+        }
+    }
+}
+
+// Cria matriz de habilidade em forma de cone
+void criar_cone(int matriz[TAM_HAB][TAM_HAB]) {
+    inicializar_matriz(matriz);
+    for (int i = 0; i < TAM_HAB; i++) {
+        for (int j = 0; j < TAM_HAB; j++) {
+            if (j >= TAM_HAB / 2 - i && j <= TAM_HAB / 2 + i) {
                 matriz[i][j] = 1;
+            }
         }
     }
 }
 
 // Cria matriz de habilidade em forma de cruz
 void criar_cruz(int matriz[TAM_HAB][TAM_HAB]) {
-    memset(matriz, 0, sizeof(int) * TAM_HAB * TAM_HAB);
+    inicializar_matriz(matriz);
     int meio = TAM_HAB / 2;
     for (int i = 0; i < TAM_HAB; i++) {
         matriz[meio][i] = 1;
@@ -59,12 +69,13 @@ void criar_cruz(int matriz[TAM_HAB][TAM_HAB]) {
 
 // Cria matriz de habilidade em forma de octaedro (losango)
 void criar_octaedro(int matriz[TAM_HAB][TAM_HAB]) {
-    memset(matriz, 0, sizeof(int) * TAM_HAB * TAM_HAB);
+    inicializar_matriz(matriz);
     int meio = TAM_HAB / 2;
     for (int i = 0; i < TAM_HAB; i++) {
         for (int j = 0; j < TAM_HAB; j++) {
-            if (abs(i - meio) + abs(j - meio) <= meio)
+            if (abs(i - meio) + abs(j - meio) <= meio) {
                 matriz[i][j] = 1;
+            }
         }
     }
 }
@@ -89,10 +100,10 @@ int main() {
     int tabuleiro[TAMANHO][TAMANHO] = {0};
     int cone[TAM_HAB][TAM_HAB], cruz[TAM_HAB][TAM_HAB], octaedro[TAM_HAB][TAM_HAB];
 
-    // Posiciona navios
+    // Posiciona navios (com coordenadas válidas)
     posicionar_navio(tabuleiro, 0, 0, 1, 0);  // horizontal
     posicionar_navio(tabuleiro, 2, 2, 0, 0);  // vertical
-    posicionar_navio(tabuleiro, 5, 2, 1, 1);  // diagonal inversa
+    posicionar_navio(tabuleiro, 5, 4, 1, 1);  // diagonal inversa (ajustada)
     posicionar_navio(tabuleiro, 6, 6, 0, 1);  // diagonal principal
 
     // Cria as habilidades
